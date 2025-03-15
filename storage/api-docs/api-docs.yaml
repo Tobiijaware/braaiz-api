@@ -1,0 +1,1073 @@
+openapi: 3.0.0
+info:
+  title: 'Blaaize Wallet API'
+  description: 'This is the API documentation for Blaaize Wallet.'
+  version: 1.0.0
+paths:
+  /api/admin/users:
+    get:
+      tags:
+        - Admin
+      summary: 'View all users'
+      description: 'Retrieve a list of all users, filterable by name, email, and creation date.'
+      operationId: 12d8068fb9094b67b1d7144ae2ee938d
+      parameters:
+        -
+          name: firstname
+          in: query
+          description: 'Filter by firstname'
+          required: false
+          schema:
+            type: string
+        -
+          name: lastname
+          in: query
+          description: 'Filter by lastname'
+          required: false
+          schema:
+            type: string
+        -
+          name: email
+          in: query
+          description: 'Filter by email'
+          required: false
+          schema:
+            type: string
+        -
+          name: created_at
+          in: query
+          description: 'Filter by creation date'
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        200:
+          description: 'List of users retrieved successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        firstname:
+                          type: string
+                          example: John
+                        lastname:
+                          type: string
+                          example: Doe
+                        email:
+                          type: string
+                          format: email
+                          example: johndoe@example.com
+                      type: object
+                  message:
+                    type: string
+                    example: 'Users list retrieved successfully'
+                type: object
+        401:
+          description: Unauthenticated
+        500:
+          description: 'Internal Server Error'
+  '/api/admin/user/{id}':
+    get:
+      tags:
+        - Admin
+      summary: 'View single user profile'
+      description: "Retrieve a user's profile including their wallets and recent transactions."
+      operationId: 977c243bb654efcc9c0383c0d6ed53cb
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'User ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: 'User profile retrieved successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    properties:
+                      user:
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          firstname:
+                            type: string
+                            example: John
+                          lastname:
+                            type: string
+                            example: Doe
+                          email:
+                            type: string
+                            format: email
+                            example: johndoe@example.com
+                        type: object
+                      wallets:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            currency:
+                              type: string
+                              example: USD
+                            balance:
+                              type: number
+                              example: 100.5
+                          type: object
+                      transactions:
+                        type: array
+                        items:
+                          properties:
+                            transaction_id:
+                              type: integer
+                              example: 123
+                            amount:
+                              type: number
+                              example: 50.75
+                            status:
+                              type: string
+                              example: Completed
+                            date:
+                              type: string
+                              format: date-time
+                              example: '2025-03-15T14:00:00Z'
+                          type: object
+                    type: object
+                  message:
+                    type: string
+                    example: 'User profile retrieved successfully'
+                type: object
+        404:
+          description: 'User not found'
+        500:
+          description: 'Internal Server Error'
+      security:
+        -
+          sanctum: []
+  /api/admin/transactions:
+    get:
+      tags:
+        - Admin
+      summary: 'Get all transactions'
+      operationId: 70f65b295a9ffc832682153892d19184
+      parameters:
+        -
+          name: user_id
+          in: query
+          description: 'Filter by user ID'
+          required: false
+          schema:
+            type: integer
+        -
+          name: currency
+          in: query
+          description: 'Filter by currency'
+          required: false
+          schema:
+            type: string
+        -
+          name: date_from
+          in: query
+          description: 'Filter from date (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: date_to
+          in: query
+          description: 'Filter to date (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        200:
+          description: 'Successful response'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        transaction_id:
+                          type: integer
+                          example: 123
+                        user_id:
+                          type: integer
+                          example: 1
+                        amount:
+                          type: number
+                          example: 150.75
+                        currency:
+                          type: string
+                          example: USD
+                        status:
+                          type: string
+                          example: Completed
+                        date:
+                          type: string
+                          format: date-time
+                          example: '2025-03-15T14:00:00Z'
+                      type: object
+                  message:
+                    type: string
+                    example: 'Transactions retrieved successfully'
+                type: object
+        500:
+          description: 'Server error'
+      security:
+        -
+          sanctum: []
+  '/api/admin/transaction/{id}':
+    get:
+      tags:
+        - Admin
+      summary: 'Get transaction by ID'
+      operationId: 76e1f2b0465811ea1e58377adab62843
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'Transaction ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: 'Successful response'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    properties:
+                      transaction_id:
+                        type: integer
+                        example: 123
+                      user_id:
+                        type: integer
+                        example: 1
+                      amount:
+                        type: number
+                        example: 150.75
+                      currency:
+                        type: string
+                        example: USD
+                      status:
+                        type: string
+                        example: Completed
+                      date:
+                        type: string
+                        format: date-time
+                        example: '2025-03-15T14:00:00Z'
+                    type: object
+                  message:
+                    type: string
+                    example: 'Transaction retrieved successfully'
+                type: object
+        404:
+          description: 'Transaction not found'
+        500:
+          description: 'Server error'
+      security:
+        -
+          sanctum: []
+  /api/admin/exchange-rates:
+    get:
+      tags:
+        - Admin
+      summary: 'Get all exchange rates'
+      operationId: 8f3c24adff6922bc763a57bb04b6df37
+      responses:
+        200:
+          description: 'Successful response'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        currency:
+                          type: string
+                          example: USD
+                        rate:
+                          type: number
+                          example: 1.2345
+                        updated_at:
+                          type: string
+                          format: date-time
+                          example: '2025-03-15T14:00:00Z'
+                      type: object
+                  message:
+                    type: string
+                    example: 'Exchange rates retrieved successfully'
+                type: object
+        500:
+          description: 'Server error'
+      security:
+        -
+          sanctum: []
+  /api/admin/exchange-rate:
+    post:
+      tags:
+        - Admin
+      summary: 'Create a new exchange rate'
+      operationId: 9e827ebc7a4cea318051baf7b1523f7a
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - from_currency
+                - to_currency
+                - rate
+              properties:
+                from_currency:
+                  type: string
+                  example: USD
+                to_currency:
+                  type: string
+                  example: EUR
+                rate:
+                  type: number
+                  format: float
+                  example: 1.02
+              type: object
+      responses:
+        201:
+          description: 'Exchange rate created successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    properties:
+                      from_currency:
+                        type: string
+                        example: USD
+                      to_currency:
+                        type: string
+                        example: EUR
+                      rate:
+                        type: number
+                        format: float
+                        example: 1.02
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: '2025-03-15T14:00:00Z'
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: '2025-03-15T14:00:00Z'
+                    type: object
+                  message:
+                    type: string
+                    example: 'Exchange rate created successfully'
+                type: object
+        500:
+          description: 'Server error'
+      security:
+        -
+          sanctum: []
+  '/api/admin/exchange-rate/{id}':
+    put:
+      tags:
+        - Admin
+      summary: 'Update an exchange rate'
+      operationId: 23445238668e08c3891c01c270953ce2
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'Exchange rate ID'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - rate
+              properties:
+                rate:
+                  type: number
+                  format: float
+                  example: 1.02
+              type: object
+      responses:
+        200:
+          description: 'Exchange rate updated successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      from_currency:
+                        type: string
+                        example: USD
+                      to_currency:
+                        type: string
+                        example: EUR
+                      rate:
+                        type: number
+                        format: float
+                        example: 1.02
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: '2025-03-15T14:00:00Z'
+                    type: object
+                  message:
+                    type: string
+                    example: 'Exchange rate updated successfully'
+                type: object
+        404:
+          description: 'Exchange rate not found'
+        500:
+          description: 'Server error'
+      security:
+        -
+          sanctum: []
+    delete:
+      tags:
+        - Admin
+      summary: 'Delete an exchange rate'
+      operationId: 7aa034a866ed396d5cb3dc2319ee7ae0
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'Exchange rate ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: 'Exchange rate deleted successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Exchange rate deleted successfully'
+                type: object
+        404:
+          description: 'Exchange rate not found'
+        500:
+          description: 'Server error'
+      security:
+        -
+          sanctum: []
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: 'Register a new user'
+      operationId: d764dd091cc4494ae0baf360b03319f3
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - firstname
+                - lastname
+                - email
+                - password
+              properties:
+                firstname:
+                  type: string
+                  example: John
+                lastname:
+                  type: string
+                  example: Doe
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  format: password
+                  example: StrongPassword123
+              type: object
+      responses:
+        201:
+          description: 'User registered successfully'
+        422:
+          description: 'Validation error'
+        500:
+          description: 'Server error'
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: 'User login'
+      operationId: 8dcb70df1020986038d098cc08d05dae
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  format: password
+                  example: StrongPassword123
+              type: object
+      responses:
+        200:
+          description: 'Login successful'
+        401:
+          description: 'Invalid credentials'
+        422:
+          description: 'Validation error'
+  /api/wallet/transfer:
+    post:
+      tags:
+        - Transaction
+      summary: 'Transfer funds between wallets'
+      description: "Transfers funds from one user's wallet to another, converting currency if needed."
+      operationId: transferFunds
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - sender_wallet_id
+                - receiver_wallet_id
+                - amount
+                - from_currency
+                - to_currency
+              properties:
+                sender_wallet_id:
+                  description: "ID of the sender's wallet"
+                  type: integer
+                  example: 1
+                receiver_wallet_id:
+                  description: "ID of the receiver's wallet"
+                  type: integer
+                  example: 2
+                amount:
+                  description: 'Amount to transfer'
+                  type: number
+                  format: float
+                  example: 100.5
+                from_currency:
+                  description: "Currency of the sender's wallet"
+                  type: string
+                  example: USD
+                to_currency:
+                  description: "Currency of the receiver's wallet"
+                  type: string
+                  example: EUR
+                description:
+                  description: 'Optional transaction description'
+                  type: string
+                  example: 'Payment for services'
+              type: object
+      responses:
+        200:
+          description: 'Transfer successful'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Transfer successful'
+                  data:
+                    properties:
+                      transaction_reference:
+                        type: string
+                        example: 550e8400-e29b-41d4-a716-446655440000
+                      sender_wallet_id:
+                        type: integer
+                        example: 1
+                      receiver_wallet_id:
+                        type: integer
+                        example: 2
+                      amount:
+                        type: number
+                        format: float
+                        example: 100.5
+                      converted_amount:
+                        type: number
+                        format: float
+                        example: 95.75
+                      currency:
+                        type: string
+                        example: USD
+                      to_currency:
+                        type: string
+                        example: EUR
+                      exchange_rate:
+                        type: number
+                        format: float
+                        example: 0.9575
+                      transaction_fee:
+                        type: number
+                        format: float
+                        example: 0
+                      status:
+                        type: string
+                        example: completed
+                      description:
+                        type: string
+                        example: 'Payment for services'
+                    type: object
+                type: object
+        400:
+          description: 'Invalid request or insufficient balance'
+        401:
+          description: Unauthorized
+        422:
+          description: 'Validation failed'
+        500:
+          description: 'Internal Server Error'
+      security:
+        -
+          sanctum: []
+  /api/transfer-request/request:
+    post:
+      tags:
+        - 'Transfer Requests'
+      summary: 'Request money from another user'
+      operationId: 070d81fa8c1bae615a5710ca60750523
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - recipient_id
+                - request_wallet_id
+                - amount
+                - currency
+              properties:
+                recipient_id:
+                  type: integer
+                  example: 5
+                request_wallet_id:
+                  type: integer
+                  example: 1
+                amount:
+                  type: number
+                  format: float
+                  example: 50
+                currency:
+                  type: string
+                  example: USD
+              type: object
+      responses:
+        200:
+          description: 'Request placed successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Transfer request placed successfully'
+                type: object
+        422:
+          description: 'Validation failed'
+        500:
+          description: 'Server error'
+      security:
+        -
+          sanctum: []
+  '/api/transfer-request/accept-request/{id}':
+    post:
+      tags:
+        - 'Transfer Requests'
+      summary: 'Accept a money request'
+      operationId: 06d625beb25653fd032edaafe345a886
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: 'Request accepted and money transferred successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Money request accepted successfully. Funds have been transferred.'
+                type: object
+        404:
+          description: 'Request not found'
+        500:
+          description: 'Server error'
+      security:
+        -
+          sanctum: []
+  '/api/transfer-request/reject-request/{id}':
+    post:
+      tags:
+        - 'Transfer Requests'
+      summary: 'Reject a money request'
+      operationId: aea979aa76cd440dc8a8ed654a67c5d9
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: 'Request rejected successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Money request rejected successfully.'
+                type: object
+        404:
+          description: 'Request not found'
+        500:
+          description: 'Server error'
+      security:
+        -
+          sanctum: []
+  /api/user/profile:
+    get:
+      tags:
+        - User
+      summary: 'Get User Profile with Wallets'
+      operationId: b875a04f8f8d99781211d13821b130f4
+      responses:
+        200:
+          description: 'User profile retrieved successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    properties:
+                      user:
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          firstname:
+                            type: string
+                            example: John
+                          lastname:
+                            type: string
+                            example: Doe
+                          email:
+                            type: string
+                            format: email
+                            example: johndoe@example.com
+                        type: object
+                      wallets:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            currency:
+                              type: string
+                              example: USD
+                            balance:
+                              type: number
+                              example: 100.5
+                          type: object
+                    type: object
+                  message:
+                    type: string
+                    example: 'User profile retrieved successfully'
+                type: object
+        401:
+          description: Unauthenticated
+        403:
+          description: Forbidden
+      security:
+        -
+          sanctum: []
+  /api/wallet/create:
+    post:
+      tags:
+        - Wallet
+      summary: 'Create a new wallet'
+      description: 'Creates a wallet for the authenticated user with the specified currency.'
+      operationId: createWallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - currency
+              properties:
+                currency:
+                  type: string
+                  example: USD
+              type: object
+      responses:
+        201:
+          description: 'Wallet created successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Wallet created successfully.'
+                  wallet_id:
+                    type: integer
+                    example: 1234
+                type: object
+        400:
+          description: 'Invalid currency or wallet already exists'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Invalid currency or wallet already exists.'
+                type: object
+        401:
+          description: Unauthorized
+        500:
+          description: 'Internal Server Error'
+      security:
+        -
+          sanctum: []
+  /api/wallet/list:
+    get:
+      tags:
+        - Wallet
+      summary: 'List all wallets'
+      description: 'Fetches a paginated list of wallets for the authenticated user.'
+      operationId: listWallets
+      parameters:
+        -
+          name: perPage
+          in: query
+          description: 'Number of wallets per page'
+          required: false
+          schema:
+            type: integer
+            example: 10
+      responses:
+        200:
+          description: 'Wallets retrieved successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  current_page:
+                    type: integer
+                    example: 1
+                  total:
+                    type: integer
+                    example: 50
+                  per_page:
+                    type: integer
+                    example: 10
+                  last_page:
+                    type: integer
+                    example: 5
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: integer
+                          example: 123
+                        currency:
+                          type: string
+                          example: USD
+                        balance:
+                          type: number
+                          format: float
+                          example: 1000.5
+                        created_at:
+                          type: string
+                          format: date-time
+                          example: '2023-01-01T12:00:00Z'
+                      type: object
+                type: object
+        401:
+          description: Unauthorized
+        500:
+          description: 'Internal Server Error'
+      security:
+        -
+          sanctum: []
+  '/api/wallet/list/{walletId}':
+    get:
+      tags:
+        - Wallet
+      summary: 'View a single wallet'
+      description: 'Fetches details of a specific wallet belonging to the authenticated user.'
+      operationId: viewWallet
+      parameters:
+        -
+          name: walletId
+          in: path
+          description: 'ID of the wallet to retrieve'
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: 'Wallet retrieved successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  currency:
+                    type: string
+                    example: USD
+                  balance:
+                    type: number
+                    format: float
+                    example: 1000.5
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: '2023-01-01T12:00:00Z'
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: '2023-01-01T12:00:00Z'
+                type: object
+        404:
+          description: 'Wallet not found'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Internal Server Error'
+      security:
+        -
+          sanctum: []
+components:
+  securitySchemes:
+    sanctum:
+      type: http
+      bearerFormat: JWT
+      scheme: bearer
+tags:
+  -
+    name: Admin
+    description: 'Admin endpoints'
+  -
+    name: Authentication
+    description: 'User authentication endpoints'
+  -
+    name: Transaction
+    description: 'Transaction endpoints'
+  -
+    name: 'Transfer Requests'
+    description: 'Transfer Requests endpoints'
+  -
+    name: User
+    description: 'User endpoints'
+  -
+    name: Wallet
+    description: 'Wallet endpoints'
+security:
+  -
+    sanctum:
+      type: apiKey
+      description: 'Enter token in format (<token>)'
+      name: Authorization
+      in: header
